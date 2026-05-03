@@ -242,14 +242,14 @@
                                 <div class="p-3 border border-secondary border-opacity-25 rounded bg-dark shadow-sm position-relative overflow-hidden">
                                     <div class="position-absolute top-0 start-0 w-100 bg-warning" style="height: 4px;"></div>
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="fw-bold text-white mb-0"><i class="fa-solid fa-hospital-user text-danger me-1"></i> ${bName}</h6>
-                                        <span class="badge bg-danger rounded-pill">${myBloodGroup} Needed</span>
+                                        <h6 class="fw-bold text-white mb-0"><i class="fa-solid fa-hospital-user text-danger me-1"></i> \${bName}</h6>
+                                        <span class="badge bg-danger rounded-pill">\${myBloodGroup} Needed</span>
                                     </div>
-                                    <p class="text-white-50 small mb-2"><i class="fa-solid fa-satellite-dish me-1"></i> ${alert.radius_km || 10.0}km Alert Radius</p>
-                                    <p class="mb-3 fw-medium text-white">${alert.message || "Urgent requirement dispatched."}</p>
+                                    <p class="text-white-50 small mb-2"><i class="fa-solid fa-satellite-dish me-1"></i> \${alert.radius_km || 10.0}km Alert Radius</p>
+                                    <p class="mb-3 fw-medium text-white">\${alert.message || "Urgent requirement dispatched."}</p>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-white-50"><i class="fa-regular fa-clock me-1"></i> ${alert.created_at}</small>
-                                        <a href="${root}/BookAppointmentServlet?prefillBankId=${alert.bank_id}&alertId=${alert.id}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">
+                                        <small class="text-white-50"><i class="fa-regular fa-clock me-1"></i> \${alert.created_at}</small>
+                                        <a href="\${root}/BookAppointmentServlet?prefillBankId=\${alert.bank_id}&alertId=\${alert.id}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">
                                             Respond Now <i class="fa-solid fa-arrow-right ms-1"></i>
                                         </a>
                                     </div>
@@ -284,13 +284,13 @@
 
                         p2pTable.innerHTML += `
                             <tr>
-                                <td class="fw-bold text-white">${req.requester_name}</td>
-                                <td><span class="badge bg-danger rounded-pill px-2 fs-6">${req.blood_group}</span></td>
-                                <td><div class="text-light text-opacity-75 small" style="max-width: 150px;">${req.hospital_city}</div></td>
-                                <td><span class="badge ${urgClass} bg-opacity-10 text-${req.urgency === "Emergency" ? 'danger' : 'primary'} border border-${req.urgency === "Emergency" ? 'danger' : 'primary'} border-opacity-25 rounded-pill">${req.urgency}</span></td>
-                                <td><span class="badge ${statClass}">${req.status}</span></td>
+                                <td class="fw-bold text-white">\${req.requester_name}</td>
+                                <td><span class="badge bg-danger rounded-pill px-2 fs-6">\${req.blood_group}</span></td>
+                                <td><div class="text-light text-opacity-75 small" style="max-width: 150px;">\${req.hospital_city}</div></td>
+                                <td><span class="badge \${urgClass} bg-opacity-10 text-\${req.urgency === "Emergency" ? 'danger' : 'primary'} border border-\${req.urgency === "Emergency" ? 'danger' : 'primary'} border-opacity-25 rounded-pill">\${req.urgency}</span></td>
+                                <td><span class="badge \${statClass}">\${req.status}</span></td>
                                 <td class="text-light text-opacity-75 small">
-                                    <div class="d-flex align-items-center gap-2">${req.created_at} ${respondBtn}</div>
+                                    <div class="d-flex align-items-center gap-2">\${req.created_at} \${respondBtn}</div>
                                 </td>
                             </tr>
                         `;
@@ -321,10 +321,10 @@
 
                         historyTable.innerHTML += `
                             <tr>
-                                <td><div class="fw-bold text-white"><i class="fa-regular fa-calendar me-2 text-white-50"></i>${appt.appointment_time || ""}</div></td>
-                                <td class="text-light text-opacity-75"><i class="fa-solid fa-building-user me-1 border border-secondary border-opacity-25 p-1 rounded"></i> ${bankName}</td>
-                                <td><span class="badge ${badgeClass} px-3 rounded-pill fs-6">${st || ""}</span></td>
-                                <td class="text-center">${certAction}</td>
+                                <td><div class="fw-bold text-white"><i class="fa-regular fa-calendar me-2 text-white-50"></i>\${appt.appointment_time || ""}</div></td>
+                                <td class="text-light text-opacity-75"><i class="fa-solid fa-building-user me-1 border border-secondary border-opacity-25 p-1 rounded"></i> \${bankName}</td>
+                                <td><span class="badge \${badgeClass} px-3 rounded-pill fs-6">\${st || ""}</span></td>
+                                <td class="text-center">\${certAction}</td>
                             </tr>
                         `;
                     });

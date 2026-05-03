@@ -825,10 +825,10 @@
                         
                         userTable.innerHTML += `
                             <tr>
-                                <td><div class="fw-bold text-white">${user.full_name}</div></td>
-                                <td><span class="badge badge-soft-info">${user.role}</span></td>
-                                <td><span class="badge ${badgeCls}">${user.status}</span></td>
-                                <td class="text-white-50" style="font-size:0.85rem;"><i class="fa-regular fa-calendar me-1"></i> ${user.created_at}</td>
+                                <td><div class="fw-bold text-white">\${user.full_name}</div></td>
+                                <td><span class="badge badge-soft-info">\${user.role}</span></td>
+                                <td><span class="badge \${badgeCls}">\${user.status}</span></td>
+                                <td class="text-white-50" style="font-size:0.85rem;"><i class="fa-regular fa-calendar me-1"></i> \${user.created_at}</td>
                             </tr>
                         `;
                     });
@@ -843,12 +843,12 @@
                     data.recentP2P.forEach(req => {
                         p2pTable.innerHTML += `
                             <tr>
-                                <td><div class="fw-bold text-white">${req.requester_name}</div></td>
-                                <td><span class="badge badge-soft-danger fs-6">${req.blood_group}</span></td>
-                                <td><div class="text-white-50">${req.hospital_city}</div></td>
-                                <td>${req.urgency}</td>
-                                <td><span class="badge badge-soft-warning">${req.status}</span></td>
-                                <td class="text-white-50" style="font-size:0.85rem;">${req.created_at}</td>
+                                <td><div class="fw-bold text-white">\${req.requester_name}</div></td>
+                                <td><span class="badge badge-soft-danger fs-6">\${req.blood_group}</span></td>
+                                <td><div class="text-white-50">\${req.hospital_city}</div></td>
+                                <td>\${req.urgency}</td>
+                                <td><span class="badge badge-soft-warning">\${req.status}</span></td>
+                                <td class="text-white-50" style="font-size:0.85rem;">\${req.created_at}</td>
                             </tr>
                         `;
                     });
