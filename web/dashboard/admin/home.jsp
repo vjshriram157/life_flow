@@ -7,17 +7,27 @@
         return;
     }
 
-    // 🤖 AUTOMATION: Run System Maintenance (Stale Purge & Replenishment Checks)
+    // 🤖 AUTOMATION: Run System Maintenance in Background (Non-blocking)
     com.bloodbank.util.AutomationService.runSystemMaintenance();
 
     long totalDonors = 0, totalBanks = 0, pendingApprovals = 0, activeAlerts = 0;
     try {
         Firestore db = FirebaseConfig.getFirestore();
-        totalDonors = db.collection("users").whereEqualTo("role", "DONOR").whereEqualTo("status", "APPROVED").count().get().get().getCount();
-        totalBanks = db.collection("blood_banks").whereEqualTo("status", "APPROVED").count().get().get().getCount();
-        pendingApprovals = db.collection("users").whereEqualTo("status", "PENDING").count().get().get().getCount();
-        activeAlerts = db.collection("emergency_alerts").count().get().get().getCount();
-    } catch (Exception e) {}
+        
+        // 🎯 OPTIMIZATION: Fire all count queries in parallel
+        com.google.api.core.ApiFuture<AggregateQuerySnapshot> fDonors = db.collection("users").whereEqualTo("role", "DONOR").whereEqualTo("status", "APPROVED").count().get();
+        com.google.api.core.ApiFuture<AggregateQuerySnapshot> fBanks = db.collection("blood_banks").whereEqualTo("status", "APPROVED").count().get();
+        com.google.api.core.ApiFuture<AggregateQuerySnapshot> fPending = db.collection("users").whereEqualTo("status", "PENDING").count().get();
+        com.google.api.core.ApiFuture<AggregateQuerySnapshot> fAlerts = db.collection("emergency_alerts").count().get();
+
+        // 🎯 OPTIMIZATION: Wait for all at once (Total wait = longest single query)
+        totalDonors = fDonors.get().getCount();
+        totalBanks = fBanks.get().getCount();
+        pendingApprovals = fPending.get().getCount();
+        activeAlerts = fAlerts.get().getCount();
+    } catch (Exception e) {
+        System.err.println("Dashboard Stat Error: " + e.getMessage());
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -174,11 +184,19 @@
                                 <tbody>
                                 <%
                                 try {
-                                    Firestore dbRec = FirebaseConfig.getFirestore();
-                                    List<QueryDocumentSnapshot> recentUsers = dbRec.collection("users")
-                                        .orderBy("created_at", com.google.cloud.firestore.Query.Direction.DESCENDING)
-                                        .limit(5).get().get().getDocuments();
+                                    Firestore db = FirebaseConfig.getFirestore();
                                     
+                                    // 🎯 OPTIMIZATION: Start both queries in parallel
+                                    com.google.api.core.ApiFuture<QuerySnapshot> fRecent = db.collection("users")
+                                        .orderBy("created_at", com.google.cloud.firestore.Query.Direction.DESCENDING)
+                                        .limit(5).get();
+                                        
+                                    com.google.api.core.ApiFuture<QuerySnapshot> fP2P = db.collection("peer_requests")
+                                        .orderBy("created_at", com.google.cloud.firestore.Query.Direction.DESCENDING)
+                                        .limit(5).get();
+
+                                    // Wait for Recent Users
+                                    List<QueryDocumentSnapshot> recentUsers = fRecent.get().getDocuments();
                                     for (QueryDocumentSnapshot doc : recentUsers) {
                                         String stat = doc.getString("status");
                                         String badgeCls = "badge-soft-success";
@@ -201,9 +219,7 @@
                                         <td><span class="badge <%=badgeCls%>"><%= stat %></span></td>
                                         <td class="text-white-50" style="font-size:0.85rem;"><i class="fa-regular fa-calendar me-1"></i> <%= created != null ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(created) : "N/A" %></td>
                                     </tr>
-                                <%  }
-                                } catch(Exception e) { out.print("<tr><td colspan='4'>Error: "+e.getMessage()+"</td></tr>"); }
-                                %>
+                                <%  } %>
                                 </tbody>
                             </table>
                         </div>
@@ -231,12 +247,8 @@
                                 </thead>
                                 <tbody>
                                 <%
-                                try {
-                                    Firestore dbP2P = FirebaseConfig.getFirestore();
-                                    List<QueryDocumentSnapshot> p2pReqs = dbP2P.collection("peer_requests")
-                                        .orderBy("created_at", com.google.cloud.firestore.Query.Direction.DESCENDING)
-                                        .limit(5).get().get().getDocuments();
-                                    
+                                    // Wait for P2P Requests
+                                    List<QueryDocumentSnapshot> p2pReqs = fP2P.get().getDocuments();
                                     boolean hasP2pData = false;
                                     for (QueryDocumentSnapshot doc : p2pReqs) {
                                         hasP2pData = true;
@@ -251,7 +263,9 @@
                                     </tr>
                                 <%  }
                                     if (!hasP2pData) out.print("<tr><td colspan='6' class='text-center py-4 text-white-50'>No peer-to-peer requests found.</td></tr>");
-                                } catch(Exception e) {}
+                                } catch(Exception e) {
+                                    System.err.println("Dashboard Table Error: " + e.getMessage());
+                                }
                                 %>
                                 </tbody>
                             </table>

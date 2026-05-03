@@ -86,41 +86,46 @@ public class AutomationService {
         }
         lastMaintenanceTime = System.currentTimeMillis();
         
-        try {
-            Firestore db = FirebaseConfig.getFirestore();
-            LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
-            
-            QuerySnapshot pendingAppts = db.collection("appointments")
-                .whereEqualTo("status", "PENDING")
-                .get().get();
+        // Run in background thread so it doesn't block the dashboard UI
+        new Thread(() -> {
+            try {
+                System.out.println("🤖 AUTOMATION: Starting background maintenance...");
+                Firestore db = FirebaseConfig.getFirestore();
+                LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
+                
+                QuerySnapshot pendingAppts = db.collection("appointments")
+                    .whereEqualTo("status", "PENDING")
+                    .get().get();
 
-            WriteBatch batch = db.batch();
-            int count = 0;
+                WriteBatch batch = db.batch();
+                int count = 0;
 
-            for (QueryDocumentSnapshot doc : pendingAppts.getDocuments()) {
-                String timeStr = doc.getString("appointment_time");
-                if (timeStr != null) {
-                    try {
-                        LocalDateTime apptTime = LocalDateTime.parse(timeStr, formatter);
-                        if (apptTime.isBefore(cutoff)) {
-                            batch.delete(doc.getReference());
-                            count++;
-                        }
-                    } catch (Exception ignored) {}
+                for (QueryDocumentSnapshot doc : pendingAppts.getDocuments()) {
+                    String timeStr = doc.getString("appointment_time");
+                    if (timeStr != null) {
+                        try {
+                            LocalDateTime apptTime = LocalDateTime.parse(timeStr, formatter);
+                            if (apptTime.isBefore(cutoff)) {
+                                batch.delete(doc.getReference());
+                                count++;
+                            }
+                        } catch (Exception ignored) {}
+                    }
                 }
-            }
 
-            if (count > 0) {
-                batch.commit().get();
-                System.out.println("🤖 AUTOMATION: Purged " + count + " stale appointments.");
-            }
-            
-            // Trigger replenishment invites for donors who donated 90 days ago
-            processReplenishmentInvites(db);
+                if (count > 0) {
+                    batch.commit().get();
+                    System.out.println("🤖 AUTOMATION: Purged " + count + " stale appointments.");
+                }
+                
+                // Trigger replenishment invites
+                processReplenishmentInvites(db);
+                System.out.println("🤖 AUTOMATION: Background maintenance complete.");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                System.err.println("🤖 AUTOMATION ERROR: " + e.getMessage());
+            }
+        }).start();
     }
 
     private static void processReplenishmentInvites(Firestore db) {
