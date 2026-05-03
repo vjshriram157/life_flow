@@ -1,0 +1,40 @@
+# --- Security: Protect Credentials ---
+backend/src/main/resources/config.properties
+backend/*.json
+*.json
+
+# --- Environment: Local Binaries & Tools ---
+apache-maven-*/
+jdk-*/
+backend/openjdk/
+backend/apache-maven-*/
+.mvn/
+mvnw
+mvnw.cmd
+
+# --- IDE: Development Artifacts ---
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+out/
+target/
+build/
+bin/
+*.class
+.classpath
+.project
+.settings/
+
+# --- Logs ---
+*.log
+backend/migration_log.txt
+
+# --- OS: System Files ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Cleanup ---
+"New folder (3)/"

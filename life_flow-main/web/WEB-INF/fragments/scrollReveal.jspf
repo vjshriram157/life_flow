@@ -1,0 +1,32 @@
+<%-- Scroll Reveal Intersection Observer --%>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('scroll-active');
+                // Only trigger once
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Watch all elements with the fade-in-up class
+    const revealElements = document.querySelectorAll('.fade-in-up');
+    revealElements.forEach(el => observer.observe(el));
+    
+    // Also watch common containers/cards that might benefit
+    const cardElements = document.querySelectorAll('.card-modern, .vision-card, .card-premium');
+    cardElements.forEach(el => {
+        if (!el.classList.contains('fade-in-up')) {
+            el.classList.add('fade-in-up');
+            observer.observe(el);
+        }
+    });
+});
+</script>

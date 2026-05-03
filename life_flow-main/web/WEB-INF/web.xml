@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <display-name>Blood Bank Management System</display-name>
+
+
+    <!-- ================= NEWSLETTER SUBSCRIBE ================= -->
+    <servlet>
+        <servlet-name>SubscribeServlet</servlet-name>
+        <servlet-class>com.bloodbank.servlets.SubscribeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubscribeServlet</servlet-name>
+        <url-pattern>/api/subscribe</url-pattern>
+    </servlet-mapping>
+
+    <!-- ================= EMERGENCY NOTIFICATIONS ================= -->
+    <servlet>
+        <servlet-name>EmergencyNotificationServlet</servlet-name>
+        <servlet-class>com.bloodbank.servlets.EmergencyNotificationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EmergencyNotificationServlet</servlet-name>
+        <url-pattern>/api/emergency-broadcast</url-pattern>
+    </servlet-mapping>
+
+    <!-- ================= AI ASSISTANCE ================= -->
+    <servlet>
+        <servlet-name>AIDispatchHelperServlet</servlet-name>
+        <servlet-class>com.bloodbank.servlets.AIDispatchHelperServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AIDispatchHelperServlet</servlet-name>
+        <url-pattern>/api/ai-dispatch-helper</url-pattern>
+    </servlet-mapping>
+
+    <!-- ================= INTELLIGENCE BRIEFING ================= -->
+    <servlet>
+        <servlet-name>IntelligenceBriefingServlet</servlet-name>
+        <servlet-class>com.bloodbank.servlets.IntelligenceBriefingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IntelligenceBriefingServlet</servlet-name>
+        <url-pattern>/api/intelligence-briefing</url-pattern>
+    </servlet-mapping>
+
+    <!-- ================= PERFORMANCE: Gzip Compression ================= -->
+    <filter>
+        <filter-name>GzipFilter</filter-name>
+        <filter-class>org.eclipse.jetty.servlets.GzipFilter</filter-class>
+        <init-param>
+            <param-name>mimeTypes</param-name>
+            <param-value>text/html,text/plain,text/xml,application/xhtml+xml,text/css,application/javascript,image/svg+xml,application/json</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>GzipFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ================= WELCOME ================= -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+
+</web-app>

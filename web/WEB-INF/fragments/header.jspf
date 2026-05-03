@@ -1,0 +1,131 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+    String lang = request.getParameter("lang");
+    if (lang != null) {
+        session.setAttribute("lang", lang);
+    }
+    String currentLang = (String) session.getAttribute("lang");
+    if (currentLang == null) {
+        currentLang = "en_US";
+    }
+%>
+<fmt:setLocale value="<%= currentLang %>" />
+<fmt:setBundle basename="Messages" />
+
+<!-- Performance Boost: Preconnect to external assets -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+<link href="<%=request.getContextPath()%>/assets/css/premium-modals.css" rel="stylesheet">
+<link rel="manifest" href="<%=request.getContextPath()%>/manifest.json">
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('<%=request.getContextPath()%>/sw.js')
+                .then(reg => console.log('LifeFlow Service Worker active.'))
+                .catch(err => console.error('PWA registration failed.', err));
+        });
+    }
+</script>
+<%
+    String uri = request.getRequestURI();
+    boolean isHomePage = uri.endsWith("index.jsp") || uri.endsWith("/blood-bank/") || uri.endsWith("/");
+%>
+
+<style>
+    .navbar-brand-target {
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+    }
+    .navbar-brand-target.show {
+        opacity: 1;
+    }
+</style>
+
+<% if (isHomePage) { %>
+    <%@ include file="/WEB-INF/fragments/preloader.jspf" %>
+<% } %>
+
+<!-- Navigation Floating Pill -->
+<div class="nav-pill-wrapper">
+    <nav class="navbar navbar-expand-lg nav-glass">
+        <div class="container-fluid">
+            <a id="nav-brand-main" class="navbar-brand d-flex align-items-center gap-2 <%= isHomePage ? "navbar-brand-target" : "" %>" href="<%=request.getContextPath()%>/index.jsp">
+                <i class="fa-solid fa-heart-pulse text-danger fs-3"></i>
+                <span class="fw-bold text-white fs-4" style="font-family: 'Poppins'; letter-spacing: -0.5px;">Life<span class="text-danger">Flow</span></span>
+            </a>
+            
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navPillMain">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navPillMain">
+                <ul class="navbar-nav mx-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link-premium ${pageContext.request.requestURI.endsWith('index.jsp') ? 'active' : ''}" href="<%=request.getContextPath()%>/index.jsp">
+                            <fmt:message key="nav.home" />
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-premium ${pageContext.request.requestURI.endsWith('findBloodBank.jsp') ? 'active' : ''}" href="<%=request.getContextPath()%>/findBloodBank.jsp">
+                            <fmt:message key="nav.find_blood" />
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-premium ${pageContext.request.requestURI.endsWith('blog.jsp') ? 'active' : ''}" href="<%=request.getContextPath()%>/blog.jsp">
+                            <fmt:message key="nav.blog" />
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-premium ${pageContext.request.requestURI.endsWith('features.jsp') ? 'active' : ''}" href="<%=request.getContextPath()%>/features.jsp">
+                            <fmt:message key="nav.features" />
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-premium d-flex align-items-center gap-1 ${pageContext.request.requestURI.endsWith('leaderboard.jsp') ? 'active' : ''}" href="<%=request.getContextPath()%>/leaderboard.jsp">
+                            <fmt:message key="nav.leaderboard" />
+                            <i class="fa-solid fa-ranking-star text-warning" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Language Switcher -->
+                    <div class="dropdown">
+                        <button class="nav-lang-pill btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2 border-0" type="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-globe text-info"></i>
+                            <span class="text-white">
+                                <c:choose>
+                                    <c:when test="${sessionScope.lang == 'hi'}">Hindi</c:when>
+                                    <c:when test="${sessionScope.lang == 'ta'}">Tamil</c:when>
+                                    <c:when test="${sessionScope.lang == 'te'}">Telugu</c:when>
+                                    <c:when test="${sessionScope.lang == 'bn'}">Bengali</c:when>
+                                    <c:when test="${sessionScope.lang == 'mr'}">Marathi</c:when>
+                                    <c:otherwise>English (US)</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end rounded-4 shadow-lg border-0 mt-3 p-2">
+                            <li><a class="dropdown-item rounded-3 py-2" href="?lang=en_US"><i class="fa-solid fa-globe me-2 opacity-50"></i> English (US)</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2" href="?lang=hi"><span class="badge bg-danger me-2">IN</span> Hindi</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2" href="?lang=ta"><span class="badge bg-danger me-2">IN</span> Tamil</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2" href="?lang=te"><span class="badge bg-danger me-2">IN</span> Telugu</a></li>
+                        </ul>
+                    </div>
+
+                    <a href="<%=request.getContextPath()%>/login.jsp" class="nav-link-premium me-2">
+                        <fmt:message key="nav.login" />
+                    </a>
+                    
+                    <a href="<%=request.getContextPath()%>/register.jsp" class="btn btn-join">
+                        <fmt:message key="nav.join_network" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
