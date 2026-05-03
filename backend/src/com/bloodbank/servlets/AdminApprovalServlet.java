@@ -91,37 +91,44 @@ public class AdminApprovalServlet extends HttpServlet {
                         com.bloodbank.util.NewsletterService.triggerNewHospitalAlert(fullName, city);
                     }
                     
-                    // 📧 Send Welcome Email (Only if not already sent)
+                    // 📧 Send Welcome Email (Only if not already sent) - ASYNC
                     Boolean emailSent = userDoc.getBoolean("welcome_email_sent");
-                    System.out.println("[DEBUG] welcome_email_sent flag: " + emailSent);
                     
                     if (emailSent == null || !emailSent) {
                         if (email != null && !email.isEmpty()) {
-                            System.out.println("[DEBUG] Calling sendWelcomeEmail...");
-                            com.bloodbank.util.EmailService.sendWelcomeEmail(email, fullName, role);
-                            // Mark as sent to prevent duplicates
-                            db.collection("users").document(userId).update("welcome_email_sent", true).get();
-                        } else {
-                            System.out.println("[DEBUG] Skipping email: Email address is null or empty");
+                            final String finalEmail = email;
+                            final String finalName = fullName;
+                            final String finalRole = role;
+                            final String finalUserId = userId;
+                            
+                            // Send in background thread to avoid blocking the Admin UI
+                            new Thread(() -> {
+                                try {
+                                    System.out.println("[ASYNC] Dispatching welcome email to: " + finalEmail);
+                                    com.bloodbank.util.EmailService.sendWelcomeEmail(finalEmail, finalName, finalRole);
+                                    
+                                    // Mark as sent in Firestore AFTER successful send
+                                    Firestore dbAsync = com.bloodbank.util.FirebaseConfig.getFirestore();
+                                    dbAsync.collection("users").document(finalUserId).update("welcome_email_sent", true).get();
+                                    System.out.println("[ASYNC] Successfully updated welcome_email_sent for " + finalEmail);
+                                } catch (Exception e) {
+                                    System.err.println("[ASYNC ERROR] Failed to send welcome email: " + e.getMessage());
+                                    e.printStackTrace();
+                                }
+                            }).start();
                         }
-                    } else {
-                        System.out.println("[DEBUG] Skipping email: Already marked as sent in Firestore");
                     }
-                } else {
-                    System.out.println("[DEBUG] Error: User document not found after status update!");
                 }
             }
 
         } catch (Exception e) {
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Approval failed: " + e.getMessage()
-            );
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/dashboard/admin/adminPendingApprovals.jsp?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
             return;
         }
 
-        // 🔁 Back to approvals page (Fixed 404 Routing)
-        response.sendRedirect(request.getContextPath() + "/dashboard/admin/adminPendingApprovals.jsp");
+        // 🔁 Back to approvals page
+        response.sendRedirect(request.getContextPath() + "/dashboard/admin/adminPendingApprovals.jsp?success=Approved successfully");
     }
 
     // 🌍 Geocode city using OpenStreetMap (Nominatim)
