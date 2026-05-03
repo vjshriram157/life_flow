@@ -88,5 +88,14 @@
         </div>
     </div>
 </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in-up').forEach(el => {
+                    el.classList.add('scroll-active');
+                });
+            }, 100);
+        });
+    </script>
 </body>
 </html>

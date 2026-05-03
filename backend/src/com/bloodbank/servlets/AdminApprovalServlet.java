@@ -87,6 +87,11 @@ public class AdminApprovalServlet extends HttpServlet {
                         // 📢 Newsletter Trigger: Notify all about Network Expansion
                         com.bloodbank.util.NewsletterService.triggerNewHospitalAlert(fullName, city);
                     }
+                    
+                    // 📧 Send Welcome Email (for both Donors and Banks)
+                    String email = userDoc.getString("email");
+                    String fullName = userDoc.getString("full_name");
+                    com.bloodbank.util.EmailService.sendWelcomeEmail(email, fullName, role);
                 }
             }
 

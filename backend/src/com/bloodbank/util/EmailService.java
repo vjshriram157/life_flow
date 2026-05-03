@@ -456,6 +456,61 @@ public class EmailService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    public static void sendWelcomeEmail(String toEmail, String fullName, String role) {
+        System.out.println("Sending Welcome email to: " + toEmail + " (Role: " + role + ")");
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", SMTP_HOST);
+        props.put("mail.smtp.port", SMTP_PORT);
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(USERNAME, PASSWORD);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(USERNAME, FROM_NAME));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            
+            message.setSubject("Welcome to LifeFlow - Your Account is Approved! 🩸");
+            
+            String roleText = "BANK".equalsIgnoreCase(role) ? "Blood Bank Partner" : "Life-Saving Donor";
+            String dashboardText = "BANK".equalsIgnoreCase(role) ? "manage your blood stock and broadcast emergency alerts" : "track your impact, respond to requests, and save lives";
+            
+            String htmlBody = "<div style='font-family: \"Inter\", Arial, sans-serif; padding: 40px; color: #1e293b; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-top: 8px solid #e11d48; border-radius: 16px; background-color: #ffffff;'>"
+                    + "<div style='text-align: center; margin-bottom: 30px;'>"
+                    + "  <h1 style='color: #e11d48; margin: 0; font-size: 28px; letter-spacing: -1px;'>WELCOME TO THE GRID</h1>"
+                    + "  <p style='color: #64748b; font-size: 1.1em; margin-top: 8px;'>Your journey with LifeFlow begins today.</p>"
+                    + "</div>"
+                    + "<p style='font-size: 1.1em; color: #334155;'>Hello <strong>" + fullName + "</strong>,</p>"
+                    + "<p style='font-size: 1.1em; line-height: 1.6; color: #334155;'>Great news! Your account has been reviewed and <strong>officially approved</strong> by our medical administration team. You are now a verified <strong>" + roleText + "</strong> in the LifeFlow network.</p>"
+                    + "<div style='background: #f8fafc; border-radius: 12px; padding: 25px; margin: 30px 0; border: 1px solid #f1f5f9;'>"
+                    + "  <h3 style='margin-top: 0; color: #0f172a; font-size: 18px;'>What's Next?</h3>"
+                    + "  <p style='margin-bottom: 0; line-height: 1.5; color: #475569;'>You can now log in to your dashboard to " + dashboardText + ".</p>"
+                    + "</div>"
+                    + "<div style='text-align: center; margin: 35px 0;'>"
+                    + "  <a href='http://localhost:9090/blood-bank/login.jsp' style='background: linear-gradient(135deg, #e11d48, #be123c); color: white; padding: 16px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 1.1em; box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.3);'>Access Your Dashboard</a>"
+                    + "</div>"
+                    + "<p style='font-size: 1.1em; line-height: 1.6; color: #334155;'>By joining LifeFlow, you've become part of an elite network dedicated to ensuring that no medical emergency goes unanswered due to blood shortages.</p>"
+                    + "<div style='margin-top: 40px; padding-top: 25px; border-top: 1px solid #f1f5f9; text-align: center;'>"
+                    + "  <p style='font-size: 0.9em; color: #94a3b8; margin: 0;'>Thank you for your commitment to humanity.</p>"
+                    + "  <p style='font-size: 0.85em; color: #e11d48; font-weight: bold; margin-top: 5px;'>Team LifeFlow &bull; Save Lives. Give Blood.</p>"
+                    + "</div>"
+                    + "</div>";
+                    
+            message.setContent(htmlBody, "text/html");
+            Transport.send(message);
+            System.out.println("✅ Welcome email sent successfully to " + toEmail);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send welcome email: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
 
