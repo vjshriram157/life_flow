@@ -116,6 +116,11 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <sourceDirectory>src</sourceDirectory>
         <finalName>blood-bank-system</finalName>
         <plugins>
@@ -164,6 +169,16 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>com.bloodbank.util.MockDataSeeder</mainClass>
+                </configuration>
+            </plugin>
+            <!-- Google App Engine Plugin for deployment -->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>2.5.0</version>
+                <configuration>
+                    <projectId>lifeflow-30d1a</projectId>
+                    <version>v1</version>
                 </configuration>
             </plugin>
         </plugins>
