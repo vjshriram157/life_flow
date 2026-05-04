@@ -124,22 +124,18 @@
     document.addEventListener('DOMContentLoaded', () => {
         const appointmentForm = document.querySelector('form');
         const submitBtn = appointmentForm.querySelector('button[type="submit"]');
+        const bankSelect = document.getElementById('bankSelect');
 
         appointmentForm.addEventListener('submit', () => {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
         });
 
-
-        if (bankSelect.value) {
+        if (bankSelect && bankSelect.value) {
             setTimeout(() => bankSelect.dispatchEvent(new Event('change')), 1000);
         }
     });
-    });
 </script>
-
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

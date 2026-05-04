@@ -3,6 +3,7 @@
 <%
     String userId = (String) session.getAttribute("userId");
     String role = (String) session.getAttribute("role");
+    String myBloodGroup = (String) session.getAttribute("bloodGroup");
     if (userId == null || role == null || !"DONOR".equalsIgnoreCase(role)) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
