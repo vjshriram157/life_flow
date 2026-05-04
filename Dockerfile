@@ -9,7 +9,7 @@ COPY . .
 RUN mvn -f backend/pom.xml clean package -DskipTests
 
 # Stage 2: Run the app using Tomcat with Optimized JVM
-FROM tomcat:9-jdk11-temurin-focal
+FROM tomcat:9.0-jdk11-openjdk-slim
 
 # --- RENDER OPTIMIZATION: JVM TUNING ---
 # We limit memory usage and use SerialGC to prevent lagging on free tier (512MB RAM)
