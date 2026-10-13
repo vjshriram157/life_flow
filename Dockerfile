@@ -19,5 +19,8 @@ COPY --from=build /app/backend/target/blood-bank-system/WEB-INF/lib/ /var/lib/je
 RUN chown -R jetty:jetty /var/lib/jetty/webapps/ROOT
 
 USER jetty
+ENV PORT=8080
 EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "exec /docker-entrypoint.sh jetty.http.port=${PORT:-8080}"]
 

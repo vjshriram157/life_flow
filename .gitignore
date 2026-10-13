@@ -2,6 +2,7 @@
 backend/src/main/resources/config.properties
 backend/*.json
 *.json
+!firebase.json
 
 # --- Environment: Local Binaries & Tools ---
 apache-maven-*/
